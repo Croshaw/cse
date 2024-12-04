@@ -1,6 +1,6 @@
 namespace MathAdd;
 
-internal static class Utils
+public static class Utils
 {
     internal static double CalcEuclideanNorm(Matrix matrix)
     {
@@ -10,6 +10,50 @@ internal static class Utils
     internal static double CalcEuclideanNorm(Vector vector)
     {
         return Math.Sqrt(vector.Sum(elem => elem * elem));
+    }
+
+    public static double CalcDeterminant(Matrix matrix)
+    {
+        if (matrix.Rows != matrix.Columns)
+            throw new ArgumentException("Определитель может быть вычислен только для квадратных матриц.");
+
+        var n = matrix.Rows;
+        var l = new double[n, n];
+        var u = new double[n, n];
+
+        // Инициализация матрицы L
+        for (var i = 0; i < n; i++)
+            l[i, i] = 1;
+
+        for (var i = 0; i < n; i++)
+        for (var j = 0; j < n; j++)
+        {
+            double tmp = 0;
+            for (var k = 0; k < Math.Min(i, j); k++)
+                tmp += l[i, k] * u[k, j];
+
+            if (i <= j)
+            {
+                // U-матрица
+                u[i, j] = matrix[i, j] - tmp;
+            }
+            else
+            {
+                // Проверка деления на ноль
+                if (Math.Abs(u[j, j]) < 1e-10)
+                    throw new InvalidOperationException(
+                        "Невозможно выполнить разложение: найден нулевой элемент на диагонали U.");
+                // L-матрица
+                l[i, j] = (matrix[i, j] - tmp) / u[j, j];
+            }
+        }
+
+        // Определитель - произведение диагональных элементов U
+        double determinant = 1;
+        for (var i = 0; i < n; i++)
+            determinant *= u[i, i];
+
+        return determinant;
     }
 
     internal static Matrix Reverse(Matrix mat)

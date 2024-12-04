@@ -56,6 +56,11 @@ public readonly struct Vector : ICloneable, IEnumerable<double>
         return result;
     }
 
+    public static Vector GetUnitVector(int size)
+    {
+        return new Vector(size, i => 1);
+    }
+
     public static Vector operator +(Vector a, Vector b)
     {
         if (a.Count != b.Count)

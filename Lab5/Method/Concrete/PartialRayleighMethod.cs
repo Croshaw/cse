@@ -24,7 +24,12 @@ public class PartialRayleighMethod : IMethod
             var last = iterations.Last();
             var cur = new Iteration(last.Y, a, last.L);
             iterations.Add(cur);
-            if (cur.Abs <= epsilon) break;
+            if (cur.Abs <= epsilon)
+            {
+                MaxL = cur.L;
+                X = cur.X;
+                break;
+            }
         }
 
         Iterations = iterations;
@@ -32,6 +37,8 @@ public class PartialRayleighMethod : IMethod
 
     public IReadOnlyList<string> ColumnsName { get; }
     public IReadOnlyList<IIteration> Iterations { get; }
+    public double MaxL { get; }
+    public Vector X { get; }
 
     public class Iteration : IIteration
     {

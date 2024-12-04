@@ -27,7 +27,10 @@ public class PowerMethod : IMethod
             iterations.Add(cur);
             if (cur.Abs <= epsilon)
             {
-                SpectralRadius = cur.L.Sum() / cur.L.Value.Count;
+                if (!cur.L.HasValue)
+                    throw new InvalidOperationException();
+                MaxL = cur.L.Sum() / cur.L.Value.Count;
+                X = cur.X;
                 break;
             }
         }
@@ -35,10 +38,10 @@ public class PowerMethod : IMethod
         Iterations = iterations;
     }
 
-    public double SpectralRadius { get; }
-
     public IReadOnlyList<string> ColumnsName { get; }
     public IReadOnlyList<IIteration> Iterations { get; }
+    public double MaxL { get; }
+    public Vector X { get; }
 
     public class Iteration : IIteration
     {

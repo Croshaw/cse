@@ -6,13 +6,13 @@ public class ReverseIterationsMethod : IMethod
 {
     public ReverseIterationsMethod(Matrix a, int errorRate)
     {
-        a = a.Reverse();
+        var tempA = a.Reverse();
         var epsilon = Math.Pow(10, -errorRate);
         var y = new Vector(5, 1);
 
         //Fill column names
         var columns = new List<string>();
-        for (var i = 0; i < a.Rows; i++) columns.Add("x" + (char)('₁' + i));
+        for (var i = 0; i < tempA.Rows; i++) columns.Add("x" + (char)('₁' + i));
         columns.Add("l");
         columns.Add("|lₖ - lₖ₋₁|");
         ColumnsName = columns;
@@ -20,12 +20,18 @@ public class ReverseIterationsMethod : IMethod
         //Fill iterations
         var iterations = new List<Iteration>();
         iterations.Add(new Iteration(y));
-        iterations.Add(new Iteration(y, iterations.Last().X, a));
+        iterations.Add(new Iteration(y, iterations.Last().X, tempA));
         while (true)
         {
             var last = iterations.Last();
-            if (last.Abs <= epsilon) break;
-            var cur = new Iteration(last.Y, last.X, a, last.L);
+            if (last.Abs <= epsilon)
+            {
+                MaxL = last.L ?? throw new InvalidOperationException();
+                X = last.X;
+                break;
+            }
+
+            var cur = new Iteration(last.Y, last.X, tempA, last.L);
             iterations.Add(cur);
         }
 
@@ -34,6 +40,8 @@ public class ReverseIterationsMethod : IMethod
 
     public IReadOnlyList<string> ColumnsName { get; }
     public IReadOnlyList<IIteration> Iterations { get; }
+    public double MaxL { get; }
+    public Vector X { get; }
 
     public class Iteration : IIteration
     {
