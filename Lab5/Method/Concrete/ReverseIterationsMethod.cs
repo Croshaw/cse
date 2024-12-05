@@ -26,7 +26,7 @@ public class ReverseIterationsMethod : IMethod
             var last = iterations.Last();
             if (last.Abs <= epsilon)
             {
-                MaxL = last.L ?? throw new InvalidOperationException();
+                L = last.L ?? throw new InvalidOperationException();
                 X = last.X;
                 break;
             }
@@ -35,13 +35,15 @@ public class ReverseIterationsMethod : IMethod
             iterations.Add(cur);
         }
 
+        IterationCount = iterations.Count - 1;
         Iterations = iterations;
     }
 
     public IReadOnlyList<string> ColumnsName { get; }
     public IReadOnlyList<IIteration> Iterations { get; }
-    public double MaxL { get; }
+    public double L { get; }
     public Vector X { get; }
+    public int IterationCount { get; }
 
     public class Iteration : IIteration
     {

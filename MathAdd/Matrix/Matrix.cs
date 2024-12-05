@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace MathAdd;
@@ -156,7 +157,7 @@ public readonly struct Matrix : ICloneable, IEnumerable<Vector>
         var matches = Regex.Matches(source, pattern);
         if (matches.Count == 0)
             throw new ArgumentException("Can't parse string to Matrix");
-        return matches.Select(m => m.Groups[1].Value.Split(',').Select(n => double.Parse(n.Trim())).ToArray())
+        return matches.Select(m => m.Groups[1].Value.Split(',').Select(n => double.Parse(n.Trim(), CultureInfo.InvariantCulture)).ToArray())
             .ToArray();
     }
 

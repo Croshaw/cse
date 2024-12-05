@@ -20,8 +20,6 @@ public class MethodTable : ITableSource
             temp.AddRange(method.Iterations[i].ToRow(9));
             _rows[i] = temp.ToArray();
         }
-
-        ;
     }
 
     public string[] ColumnNames { get; }

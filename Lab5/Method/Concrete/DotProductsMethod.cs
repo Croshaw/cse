@@ -4,7 +4,7 @@ namespace Lab5;
 
 public class DotProductsMethod : IMethod
 {
-    public DotProductsMethod(Matrix a, int errorRate)
+    public DotProductsMethod(Matrix a, int errorRate, bool reverse)
     {
         var epsilon = Math.Pow(10, -errorRate);
         var y = new Vector(5, 1);
@@ -19,27 +19,28 @@ public class DotProductsMethod : IMethod
         //Fill Iterations
         var iterations = new List<Iteration>();
         iterations.Add(new Iteration(y));
-        iterations.Add(new Iteration(y, iterations.Last().X, a));
+        iterations.Add(new Iteration(y, iterations.Last().X, a, reverse));
         while (true)
         {
             var last = iterations.Last();
-            var cur = new Iteration(last.Y, last.X, a, last.L);
+            var cur = new Iteration(last.Y, last.X, a, reverse, last.L);
             iterations.Add(cur);
             if (cur.Abs <= epsilon)
             {
-                MaxL = cur.L ?? throw new InvalidOperationException();
+                L = cur.L ?? throw new InvalidOperationException();
                 X = cur.X;
                 break;
             }
         }
-
+        IterationCount = iterations.Count - 1;
         Iterations = iterations;
     }
 
     public IReadOnlyList<string> ColumnsName { get; }
     public IReadOnlyList<IIteration> Iterations { get; }
-    public double MaxL { get; }
+    public double L { get; }
     public Vector X { get; }
+    public int IterationCount { get; }
 
     public class Iteration : IIteration
     {
@@ -54,11 +55,13 @@ public class DotProductsMethod : IMethod
             X = Y / Y.EuclideanNorm;
         }
 
-        public Iteration(Vector y, Vector x, Matrix a, double? lastL = null)
+        public Iteration(Vector y, Vector x, Matrix a, bool reverse, double? lastL = null)
         {
             Y = (a * x)[0];
             X = Y / Y.EuclideanNorm;
             L = (Y * Y).Sum() / (Y * x).Sum();
+            if (reverse)
+                L = 1 / L;
             if (lastL is not null)
                 Abs = Math.Abs(L.Value - lastL.Value);
             else

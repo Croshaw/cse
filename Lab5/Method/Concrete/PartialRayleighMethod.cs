@@ -4,7 +4,7 @@ namespace Lab5;
 
 public class PartialRayleighMethod : IMethod
 {
-    public PartialRayleighMethod(Matrix a, int errorRate)
+    public PartialRayleighMethod(Matrix a, int errorRate, bool reverse)
     {
         var epsilon = Math.Pow(10, -errorRate);
         var y = new Vector(5, 1);
@@ -18,27 +18,28 @@ public class PartialRayleighMethod : IMethod
 
         //Fill Iterations
         var iterations = new List<Iteration>();
-        iterations.Add(new Iteration(y, a));
+        iterations.Add(new Iteration(y, a, reverse));
         while (true)
         {
             var last = iterations.Last();
-            var cur = new Iteration(last.Y, a, last.L);
+            var cur = new Iteration(last.Y, a, reverse,last.L);
             iterations.Add(cur);
             if (cur.Abs <= epsilon)
             {
-                MaxL = cur.L;
+                L = cur.L;
                 X = cur.X;
                 break;
             }
         }
-
+        IterationCount = iterations.Count - 1;
         Iterations = iterations;
     }
 
     public IReadOnlyList<string> ColumnsName { get; }
     public IReadOnlyList<IIteration> Iterations { get; }
-    public double MaxL { get; }
+    public double L { get; }
     public Vector X { get; }
+    public int IterationCount { get; }
 
     public class Iteration : IIteration
     {
@@ -47,11 +48,13 @@ public class PartialRayleighMethod : IMethod
         public readonly Vector X;
         public readonly Vector Y;
 
-        public Iteration(Vector y, Matrix a, double? lastL = null)
+        public Iteration(Vector y, Matrix a, bool reverse, double? lastL = null)
         {
             X = y / y.EuclideanNorm;
             Y = (a * X)[0];
             L = (Y * X).Sum() / (X * X).Sum();
+            if (reverse)
+                L = 1 / L;
             if (lastL is not null)
                 Abs = Math.Abs(L - lastL.Value);
             else

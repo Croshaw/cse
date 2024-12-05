@@ -118,6 +118,12 @@ public readonly struct Vector : ICloneable, IEnumerable<double>
         var result = new Vector(a.Count, i => a[i] / b);
         return result;
     }
+    public static Vector operator /(double a, Vector b)
+    {
+        var result = new Vector(b.Count, i => a/b[i]);
+        return result;
+    }
+
 
     public static implicit operator Vector(double[] source)
     {

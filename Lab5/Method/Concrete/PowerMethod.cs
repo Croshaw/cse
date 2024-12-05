@@ -4,7 +4,7 @@ namespace Lab5;
 
 public class PowerMethod : IMethod
 {
-    public PowerMethod(Matrix a, int errorRate)
+    public PowerMethod(Matrix a, int errorRate, bool reverse)
     {
         var epsilon = Math.Pow(10, -errorRate);
         var y = new Vector(5, 1);
@@ -19,29 +19,30 @@ public class PowerMethod : IMethod
         //Fill Iterations
         var iterations = new List<Iteration>();
         iterations.Add(new Iteration(y));
-        iterations.Add(new Iteration(y, iterations.Last().X, a));
+        iterations.Add(new Iteration(y, iterations.Last().X, a, reverse));
         while (true)
         {
             var last = iterations.Last();
-            var cur = new Iteration(last.Y, last.X, a, last.L);
+            var cur = new Iteration(last.Y, last.X, a, reverse,last.L);
             iterations.Add(cur);
             if (cur.Abs <= epsilon)
             {
                 if (!cur.L.HasValue)
                     throw new InvalidOperationException();
-                MaxL = cur.L.Sum() / cur.L.Value.Count;
+                L = cur.L.Sum() / cur.L.Value.Count;
                 X = cur.X;
                 break;
             }
         }
-
+        IterationCount = iterations.Count - 1;
         Iterations = iterations;
     }
 
     public IReadOnlyList<string> ColumnsName { get; }
     public IReadOnlyList<IIteration> Iterations { get; }
-    public double MaxL { get; }
+    public double L { get; }
     public Vector X { get; }
+    public int IterationCount { get; }
 
     public class Iteration : IIteration
     {
@@ -56,11 +57,13 @@ public class PowerMethod : IMethod
             X = Y / Y.EuclideanNorm;
         }
 
-        public Iteration(Vector y, Vector prevX, Matrix a, Vector? prevL = null)
+        public Iteration(Vector y, Vector prevX, Matrix a, bool reverse, Vector? prevL = null)
         {
             Y = (a * prevX)[0];
             X = Y / Y.EuclideanNorm;
             L = Y / prevX;
+            if (reverse)
+                L = 1 / L;
             if (prevL.HasValue)
             {
                 double temp = -1;

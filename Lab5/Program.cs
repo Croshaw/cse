@@ -3,24 +3,6 @@ using Lab5;
 using MathAdd;
 using Terminal.Gui;
 using Attribute = Terminal.Gui.Attribute;
-
-Tab GetTab(IMethod method, string name)
-{
-    var table = new TableView(new MethodTable(method))
-    {
-        Width = Dim.Fill(),
-        Height = Dim.Fill(),
-        FullRowSelect = true,
-        X = Pos.Center(),
-        Style = { AlwaysShowHeaders = true, ShowHorizontalBottomline = true }
-    };
-    return new Tab
-    {
-        DisplayText = name,
-        View = table
-    };
-}
-
 Matrix mat = new[,]
 {
     { 1d, 2, 3, 4, 5 },
@@ -30,13 +12,17 @@ Matrix mat = new[,]
     { 5, 5, 5, 3, 1 }
 };
 var errorRate = 6;
-
+bool isMin = false;
 if (args.Length != 0)
     for (var i = 0; i < args.Length; i += 2)
     {
         var command = args[i];
         switch (command)
         {
+            case "-m" or "--min":
+                isMin = true;
+                i--;
+                break;
             case "-e" or "--example":
                 mat = new[,]
                 {
@@ -59,32 +45,53 @@ if (args.Length != 0)
         }
     }
 
+var reverseMat = mat.Reverse();
 
-var power = new PowerMethod(mat, errorRate);
-var dot = new DotProductsMethod(mat, errorRate);
-var rayleigh = new PartialRayleighMethod(mat, errorRate);
-var reverse = new ReverseIterationsMethod(mat, errorRate);
+var power = new PowerMethod(mat, errorRate, false);
+var dot = new DotProductsMethod(mat, errorRate, false);
+var rayleigh = new PartialRayleighMethod(mat, errorRate, false);
 
-Application.Init();
+var reversePower = new PowerMethod(reverseMat, errorRate, true);
+var reverseDot = new DotProductsMethod(reverseMat, errorRate, true);
+var reverseRayleigh = new PartialRayleighMethod(reverseMat, errorRate, true);
 
-var w = new Window
+var dic = new Dictionary<string, (IMethod, IMethod)>
 {
-    Title = "Lab5",
-    Width = Dim.Fill(),
-    Height = Dim.Fill(),
-    ColorScheme = new ColorScheme(Attribute.Default, new Attribute(ColorName.Black, ColorName.White), Attribute.Default,
-        Attribute.Default, Attribute.Default)
+    { "Power", (power, reversePower) },
+    { "Dot", (dot, reverseDot) },
+    { "Rayleigh", (rayleigh, reverseRayleigh) },
 };
+// var reverse = new ReverseIterationsMethod(mat, errorRate);
 
-var dic = new Dictionary<string, IMethod>
+var colorScheme = new ColorScheme(Attribute.Default, new Attribute(ColorName.Black, ColorName.White), Attribute.Default,
+    Attribute.Default, Attribute.Default);
+
+
+Tab GetTab(IMethod method, string name)
 {
-    { "Power", power },
-    { "Dot", dot },
-    { "Rayleigh", rayleigh },
-    { "Reverse", reverse }
-};
+    var table = new TableView(new MethodTable(method))
+    {
+        Width = Dim.Fill(),
+        Height = Dim.Fill(),
+        FullRowSelect = true,
+        X = Pos.Center(),
+        Style = { AlwaysShowHeaders = true, ShowHorizontalBottomline = true }
+    };
+    return new Tab
+    {
+        DisplayText = name,
+        View = table
+    };
+}
 
-Application.QuitKey = Key.C.WithCtrl;
+void SetupTabs(TabView tabView, Dictionary<string, (IMethod, IMethod)> methods)
+{
+    foreach (var tab in tabView.Tabs.ToArray())
+        tabView.RemoveTab(tab);
+    
+    foreach (var tuple in methods)
+        tabView.AddTab(GetTab(isMin ? tuple.Value.Item2 : tuple.Value.Item1, tuple.Key), false);
+}
 
 var tabView = new TabView
 {
@@ -92,11 +99,33 @@ var tabView = new TabView
     Height = Dim.Fill()
 };
 
-tabView.AddTab(GetTab(power, "Power"), true);
-tabView.AddTab(GetTab(dot, "Dot"), false);
-tabView.AddTab(GetTab(rayleigh, "Rayleigh"), false);
-tabView.AddTab(GetTab(reverse, "Reverse"), false);
+var comboBox = new ComboBox
+{
+    Width = Dim.Fill(),
+    Height = Dim.Percent(10)
+};
 
+void Setup()
+{
+    SetupTabs(tabView, dic);
+    comboBox.OnSelectedChanged();
+}
+
+var radio = new CheckBox()
+{
+    Text = "Is Min",
+    CheckedState = isMin ? CheckState.Checked : CheckState.UnChecked
+};
+radio.CheckedStateChanging += (sender, args) =>
+{
+    isMin = args.NewValue == CheckState.Checked;
+    Setup();
+};
+
+// tabView.AddTab(GetTab(power, "Power"), true);
+// tabView.AddTab(GetTab(dot, "Dot"), false);
+// tabView.AddTab(GetTab(rayleigh, "Rayleigh"), false);
+// tabView.AddTab(GetTab(reverse, "Reverse"), false);
 
 var vectorView = new ListView
 {
@@ -109,7 +138,8 @@ var textInRightSide = new TextView
     Width = Dim.Fill(),
     Height = Dim.Percent(10),
     Text = "Vector X:",
-    ReadOnly = true
+    ReadOnly = true,
+    ColorScheme = colorScheme
 };
 var rightSideView = new FrameView
 {
@@ -126,7 +156,8 @@ var textInLeftSide = new TextView
     Width = Dim.Fill(),
     Height = Dim.Fill(),
     TextAlignment = Alignment.Center,
-    ReadOnly = true
+    ReadOnly = true,
+    ColorScheme = colorScheme
 };
 var leftSideView = new FrameView
 {
@@ -142,20 +173,17 @@ var frameView = new FrameView
     Height = Dim.Fill()
 };
 
-var comboBox = new ComboBox
-{
-    Width = Dim.Fill(),
-    Height = Dim.Percent(10)
-};
-comboBox.SetSource(["Power", "Dot", "Rayleigh", "Reverse"]);
+
+comboBox.SetSource(new ObservableCollection<string>(dic.Keys.ToArray()));
 comboBox.SelectedItemChanged += (sender, args) =>
 {
     if (args.Item >= 0)
     {
-        var method = dic[args.Value.ToString()!];
-        var temp = Matrix.GetUnitMatrix(mat.Rows) * method.MaxL;
+        var tuple = dic[args.Value.ToString()!];
+        var method = isMin ? tuple.Item2 : tuple.Item1;
+        var temp = Matrix.GetUnitMatrix(mat.Rows) * method.L;
         textInLeftSide.Text =
-            $"ErrorRate: {errorRate}\nmax l: {method.MaxL}\n|A-l*E|: {Utils.CalcDeterminant(mat - temp)}\n\nIterations Count: {method.Iterations.Count}";
+            $"ErrorRate: {errorRate}\nl: {method.L}\n|A-l*E|: {Utils.CalcDeterminant(mat - temp)}\n\nIterations Count: {method.IterationCount}";
         vectorView.SetSource(new ObservableCollection<double>(method.X.ToArray()));
     }
 };
@@ -173,7 +201,39 @@ var totalTabView = new TabView
 
 totalTabView.AddTab(new Tab { DisplayText = "Single", View = frameView }, true);
 totalTabView.AddTab(new Tab { DisplayText = "Total", View = tabView }, false);
+//
+// ComboBox cb = new ComboBox()
+// {
+//     Source = new ListWrapper<string>(["3","4","5","6","7","8","9"]),
+//     Width = Dim.Fill(30),
+//     Height = Dim.Absolute(10),
+//     SelectedItem = 0
+// };
+// cb.SelectedItemChanged += (sender, args) =>
+// {
+//     errorRate = int.Parse(args.Value.ToString()!);
+//     dic.Clear();
+//     dic["Power"] = (new PowerMethod(mat, errorRate, false), new PowerMethod(mat, errorRate, true));
+//     dic["Dot"] = (new DotProductsMethod(mat, errorRate, false), new DotProductsMethod(mat, errorRate, true));
+//     dic["Rayleigh"] = (new PartialRayleighMethod(mat, errorRate, false), new PartialRayleighMethod(mat, errorRate, true));
+//     Setup();
+// };
+Application.Init();
+Application.QuitKey = Key.C.WithCtrl;
 
+var w = new Window
+{
+    Title = "Lab5",
+    Width = Dim.Fill(),
+    Height = Dim.Fill(),
+    ColorScheme = colorScheme
+};
 w.Add(totalTabView);
+w.Add(radio);
+radio.X = Pos.Absolute(20);
+radio.Y = Pos.Absolute(1);
+
+// radio.Y = Pos.;
+
 Application.Run(w);
 Application.Shutdown();
