@@ -78,8 +78,18 @@ for (var i = size - 2; i >= 0; i--) m[i] = alpha[i] * m[i + 1] + betta[i];
 
 PrintHelper.Print(m, prefix: "M: [ ", postfix: " ]", printFunc: d => d.ToString("F5", CultureInfo.InvariantCulture));
 Console.WriteLine();
+List<(Func<double, bool>, Func<double, double>)> functions = [];
 for (int i = 0; i < m.Length-1; i++)
 {
+    functions.Add(((x) => x >= Settings.X[i] && x < Settings.X[i + 1], (x) =>
+    {
+		var t = (x - Settings.X[i]) / h[i];
+		return Settings.Y[i] * (1 - 3 * Math.Pow(t, 2) + 2 * Math.Pow(t, 3)) +
+					 Settings.Y[i+1] * (3 * Math.Pow(t, 2) - 2 * Math.Pow(t, 3)) +
+					 m[i] * h[i] * (t - 2 * Math.Pow(t, 2) + Math.Pow(t, 3)) +
+					 m[i+1] * h[i] * (Math.Pow(t, 3) - Math.Pow(t, 2));
+    }));
+
     string ex = $"S{i} = ";
     if(Settings.Y[i] != 0) ex += $"{Settings.Y[i]}(1 - 3t^2 + 2t^3) + ";
     if (Settings.Y[i + 1] != 0) ex += $"{Settings.Y[i + 1]}(3t^2 - 2t^3) + ";
@@ -152,12 +162,13 @@ while (true)
             secondInd = i;
             break;
         }
-
+    var result = functions.First(pair => pair.Item1.Invoke(unknownX)).Item2.Invoke(unknownX);
     var t = (unknownX - Settings.X[firstInd]) / h[firstInd];
-    var result = Settings.Y[firstInd] * (1 - 3 * Math.Pow(t, 2) + 2 * Math.Pow(t, 3)) +
-                 Settings.Y[secondInd] * (3 * Math.Pow(t, 2) - 2 * Math.Pow(t, 3)) +
-                 m[firstInd] * h[firstInd] * (t - 2 * Math.Pow(t, 2) + Math.Pow(t, 3)) +
-                 m[secondInd] * h[firstInd] * (Math.Pow(t, 3) - Math.Pow(t, 2));
+    //var result = Settings.Y[firstInd] * (1 - 3 * Math.Pow(t, 2) + 2 * Math.Pow(t, 3)) +
+    //             Settings.Y[secondInd] * (3 * Math.Pow(t, 2) - 2 * Math.Pow(t, 3)) +
+    //             m[firstInd] * h[firstInd] * (t - 2 * Math.Pow(t, 2) + Math.Pow(t, 3)) +
+    //             m[secondInd] * h[firstInd] * (Math.Pow(t, 3) - Math.Pow(t, 2));
     Console.WriteLine($"t = {t.ToString(CultureInfo.InvariantCulture)}");
     Console.WriteLine($"Sc({unknownX.ToString(CultureInfo.InvariantCulture)}) = {result.ToString(CultureInfo.InvariantCulture)}");
+
 }
