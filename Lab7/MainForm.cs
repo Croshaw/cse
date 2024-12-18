@@ -1,4 +1,5 @@
 using OxyPlot;
+using OxyPlot.Legends;
 using OxyPlot.Series;
 
 namespace Lab7
@@ -8,40 +9,108 @@ namespace Lab7
 		public MainForm()
 		{
 			InitializeComponent();
-			if (Settings.X.Length != Settings.Y.Length)
-				throw new Exception();
-
-			//double avg = Settings.X.Average();
-			//double sigma = Settings.Y.Sum(x => Math.Pow(x - avg, 2));
-			//MessageBox.Show(sigma.ToString());
-
 			var plotModel = new PlotModel();
+			var legend = new Legend()
+			{	
+				LegendPosition = LegendPosition.TopRight,
+				LegendPlacement = LegendPlacement.Outside
+			};
+			plotModel.Legends.Add(legend);
 
+			var functionSelector = new FunctionSelector(Settings.X, Settings.Y);
+			plotModel.Series.Add(GenerateScatterSeries(Settings.X, Settings.Y, "f(x)"));
+			plotModel.Series.Add(GenerateLineSeries(Settings.X, functionSelector.LinearFunctionFitter.Calculate, "–õ–∏–Ω–µ–π–Ω–∞—è"));
+			plotModel.Series.Add(GenerateLineSeries(Settings.X, functionSelector.PowerFunctionFitter.Calculate, "–°—Ç–µ–ø–µ–Ω–Ω–∞—è"));
+			plotView1.Model = plotModel;
+			
+			tabPage1.Controls.Add(GenerateDataGridView(Settings.X, Settings.Y));
+			
+			tabPage2.Controls.Add(Hz(functionSelector.LinearFunctionFitter));
+			tabPage2.Controls.Add(GenerateDataGridView(functionSelector.LinearFunctionFitter.X, functionSelector.LinearFunctionFitter.Y));
+			
+			tabPage3.Controls.Add(Hz(functionSelector.PowerFunctionFitter));
+			tabPage3.Controls.Add(GenerateDataGridView(functionSelector.PowerFunctionFitter.X, functionSelector.PowerFunctionFitter.Y));
+		}
+
+		private static ScatterSeries GenerateScatterSeries(double[] x, double[] y, string? title = null)
+		{
 			var scatterSeries = new ScatterSeries
 			{
 				MarkerType = MarkerType.Circle,
 				MarkerSize = 5,
-				MarkerFill = OxyColors.Red // ÷‚ÂÚ Ï‡ÍÂ‡
+				Title = title
 			};
-
-			for (int i = 0; i < Settings.X.Length; i++)
-				scatterSeries.Points.Add(new ScatterPoint(Settings.X[i], Settings.Y[i]));
-			plotModel.Series.Add(scatterSeries);
-			plotView1.Model = plotModel;
-
-			int k = 0;
-			double sumKvX = 0;
-			double sumX = 0;
-			double sumY = 0;
-			double sumXY = 0;
-			for(int i = 0; i < Settings.X.Length;i++)
+			
+			for (var i = 0; i < Settings.X.Length; i++)
+				scatterSeries.Points.Add(new ScatterPoint(x[i], y[i]));
+			
+			return scatterSeries;
+		}
+		private static LineSeries GenerateLineSeries(double[] x, Func<double, double> y, string? title = null)
+		{
+			var lineSeries = new LineSeries()
 			{
-				sumKvX += Math.Pow(Settings.X[i], 2);
-				sumX += Settings.X[i];
-				sumY += Settings.Y[i];
-				sumXY += Settings.X[i] * Settings.Y[i];
-			}
+				Title = title,
+			};
+			foreach (var t in x)
+				lineSeries.Points.Add(new DataPoint(t, y.Invoke(t)));
+			return lineSeries;
+		}
 
+		private static DataGridView GenerateDataGridView(double[] x, double[] y)
+		{
+			var dgv = new DataGridView()
+			{
+				BorderStyle = BorderStyle.None,
+				BackColor = Color.White,
+				Dock = DockStyle.Top,
+				AllowUserToAddRows = false,
+				AllowUserToDeleteRows = false,
+				AllowUserToOrderColumns = false,
+				AllowUserToResizeColumns = false,
+				AllowUserToResizeRows = false,
+				ReadOnly = true,
+				ColumnHeadersVisible = false,
+				RowHeadersVisible = false,
+				AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells,
+			};
+			for (var i = 0; i <= x.Length; i++)
+				dgv.Columns.Add(null, "");
+			dgv.Rows.Add(x.Select(x => x.ToString()).Prepend("x").ToArray());
+			dgv.Rows.Add(y.Select(y => y.ToString()).Prepend("f(x)").ToArray());
+			return dgv;
+		}
+		private static Panel Hz(LinearFunctionFitter fitter) {
+			var panel = new Panel()
+			{
+				Dock = DockStyle.Fill
+			};
+			var label = new Label()
+			{
+				Text = $"k = {fitter.K}\nb = {fitter.B}\nœÉ = {fitter.Deviation}",
+				Dock = DockStyle.Fill,
+				// ReadOnly = true,
+				// WordWrap = true,
+				AutoSize = false
+			};
+			panel.Controls.Add(label);
+			return panel;
+		}
+		private static Panel Hz(PowerFunctionFitter fitter) {
+			var panel = new Panel()
+			{
+				Dock = DockStyle.Fill
+			};
+			var label = new Label()
+			{
+				Text = $"m = {fitter.M}\nb = {fitter.B}\nc = {fitter.C}\nœÉ = {fitter.Deviation}",
+				Dock = DockStyle.Fill,
+				// ReadOnly = true,
+				// WordWrap = true,
+				AutoSize = false
+			};
+			panel.Controls.Add(label);
+			return panel;
 		}
 	}
 }
