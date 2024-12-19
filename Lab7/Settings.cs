@@ -62,6 +62,18 @@ public class PowerFunctionFitter : IFunctionFitter
 	}
 }
 
+public class SquareFunctionFitter : IFunctionFitter 
+{
+	public double[] X { get; }
+	public double[] Y { get; }
+	public double Deviation { get; }
+	
+	public double Calculate(double x)
+	{
+		throw new NotImplementedException();
+	}
+}
+
 public class FunctionSelector
 {
 	public double[] X { get; }

@@ -61,16 +61,19 @@ public class RectangleIntegrator
     {
         public double H { get; }
         public double I { get; }
+        public int N { get; }
         public Point[] Points { get; }
     }
     public class LeftIteration : IIteration
     {
         public double H { get; }
         public double I { get; }
+        public int N { get; }
         public Point[] Points { get; }
         public LeftIteration(int n, double a, double b, Func<double, double> function)
         {
             H = (b - a) / n;
+            N = n;
             Points = new Point[n];
             for (var i = 0; i < n; i++)
             {
@@ -85,10 +88,12 @@ public class RectangleIntegrator
     {
         public double H { get; }
         public double I { get; }
+        public int N { get; }
         public Point[] Points { get; }
 
         public RightIteration(int n, double a, double b, Func<double, double> function)
         {
+            N = n;
             H = (b - a) / n;
             Points = new Point[n];
             for (var i = 1; i <= n; i++)
@@ -104,11 +109,13 @@ public class RectangleIntegrator
     {
         public double H { get; }
         public double I { get; }
+        public int N { get; }
         public Point[] Points { get; }
 
         public MiddleIteration(int n, double a, double b, Func<double, double> function)
         {
             H = (b - a) / n;
+            N = n;
             Points = new Point[n];
             for (var i = 0; i < n; i++)
             {
@@ -123,9 +130,11 @@ public class RectangleIntegrator
     {
         public double H { get; }
         public double I { get; }
+        public int N { get; }
         public Point[] Points { get; }
         public TrapeziumIteration(int n, double a, double b, Func<double, double> function)
         {
+            N = n;
             H = (b - a) / n;
             Points = new Point[n+1];
             for (var i = 0; i <= n; i++)
@@ -141,10 +150,12 @@ public class RectangleIntegrator
     {
         public double H { get; }
         public double I { get; }
+        public int N { get; }
         public Point[] Points { get; }
         public ParabolaIteration(int n, double a, double b, Func<double, double> function)
         {
             // n *= 2;
+            N = n;
             H = (b - a) / n;
             Points = new Point[n+1];
             for (var i = 0; i <= n; i++)
