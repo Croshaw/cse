@@ -1,7 +1,8 @@
 ﻿using System.Data;
 using System.Text;
 
-namespace Lab8;
+namespace PrintHelper;
+
 public struct Padding
 {
     public int Top { get; }
@@ -287,6 +288,11 @@ public class Table : DataTable
 
     private int[] widths;
 
+    public void AddColumns(params ReadOnlySpan<string> columns)
+    {
+        foreach (var column in columns)
+            Columns.Add(column);
+    }
     public Table()
     {
         CellSettings = new CellSettings()
@@ -303,13 +309,16 @@ public class Table : DataTable
         for (var i = 0; i < widths.Length; i++)
         {
             widths[i] = (from DataRow sourceRow in Rows select sourceRow[i].ToString() into row select row?.Length ?? 0).Prepend(-1).Max();
-            // if(widths[i]%2 != 0)
-            //     widths[i]++;
+            if(ColumnHeadersVisible)
+                widths[i] = Math.Max(widths[i], Columns[i].ColumnName.Length);
         }
+
         Width = widths.Sum() + Columns.Count * (CellSettings.Padding.Left + CellSettings.Padding.Right) + Columns.Count + 1;
     }
-    public string ToStr()
+    
+    public override string ToString()
     {
+        CalcWidth();
         var sb = new StringBuilder();
         if (ColumnHeadersVisible)
         {
