@@ -1,3 +1,4 @@
+using MathNet.Numerics;
 using OxyPlot;
 using OxyPlot.Legends;
 using OxyPlot.Series;
@@ -19,8 +20,10 @@ namespace Lab7
 
 			var functionSelector = new FunctionSelector(Settings.X, Settings.Y);
 			plotModel.Series.Add(GenerateScatterSeries(Settings.X, Settings.Y, "f(x)"));
-			plotModel.Series.Add(GenerateLineSeries(Settings.X, functionSelector.LinearFunctionFitter.Calculate, "Линейная"));
-			plotModel.Series.Add(GenerateLineSeries(Settings.X, functionSelector.PowerFunctionFitter.Calculate, "Степенная"));
+			// plotModel.Series.Add(GenerateLineSeries(Settings.X, functionSelector.LinearFunctionFitter.Calculate, "Линейная"));
+			// plotModel.Series.Add(GenerateLineSeries(Settings.X, functionSelector.PowerFunctionFitter.Calculate, "Степенная"));
+			// plotModel.Series.Add(GenerateLineSeries(Settings.X, functionSelector.SquareFunctionFitter.Calculate, "Квадратичная"));
+			plotModel.Series.Add(GenerateLineSeries(Settings.X, functionSelector.ExponentialFunctionFitter.Calculate, "Экспоненциальная"));
 			plotView1.Model = plotModel;
 			
 			tabPage1.Controls.Add(GenerateDataGridView(Settings.X, Settings.Y));
@@ -30,6 +33,12 @@ namespace Lab7
 			
 			tabPage3.Controls.Add(Hz(functionSelector.PowerFunctionFitter));
 			tabPage3.Controls.Add(GenerateDataGridView(functionSelector.PowerFunctionFitter.X, functionSelector.PowerFunctionFitter.Y));
+			
+			tabPage4.Controls.Add(Hz(functionSelector.SquareFunctionFitter));
+			tabPage4.Controls.Add(GenerateDataGridView(functionSelector.SquareFunctionFitter.X, functionSelector.SquareFunctionFitter.Y));
+			
+			tabPage5.Controls.Add(Hz(functionSelector.ExponentialFunctionFitter));
+			tabPage5.Controls.Add(GenerateDataGridView(functionSelector.ExponentialFunctionFitter.X, functionSelector.ExponentialFunctionFitter.Y));
 		}
 
 		private static ScatterSeries GenerateScatterSeries(double[] x, double[] y, string? title = null)
@@ -104,6 +113,38 @@ namespace Lab7
 			var label = new Label()
 			{
 				Text = $"m = {fitter.M}\nb = {fitter.B}\nc = {fitter.C}\nσ = {fitter.Deviation}",
+				Dock = DockStyle.Fill,
+				// ReadOnly = true,
+				// WordWrap = true,
+				AutoSize = false
+			};
+			panel.Controls.Add(label);
+			return panel;
+		}
+		private static Panel Hz(SquareFunctionFitter fitter) {
+			var panel = new Panel()
+			{
+				Dock = DockStyle.Fill
+			};
+			var label = new Label()
+			{
+				Text = $"a = {fitter.A}\nb = {fitter.B}\nc = {fitter.C}\nσ = {fitter.Deviation}",
+				Dock = DockStyle.Fill,
+				// ReadOnly = true,
+				// WordWrap = true,
+				AutoSize = false
+			};
+			panel.Controls.Add(label);
+			return panel;
+		}
+		private static Panel Hz(ExponentialFunctionFitter fitter) {
+			var panel = new Panel()
+			{
+				Dock = DockStyle.Fill
+			};
+			var label = new Label()
+			{
+				Text = $"a = {fitter.A}\nb = {fitter.B}\nσ = {fitter.Deviation}",
 				Dock = DockStyle.Fill,
 				// ReadOnly = true,
 				// WordWrap = true,

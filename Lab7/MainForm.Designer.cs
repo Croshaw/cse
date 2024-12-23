@@ -33,6 +33,8 @@
 			tabPage1 = new System.Windows.Forms.TabPage();
 			tabPage2 = new System.Windows.Forms.TabPage();
 			tabPage3 = new System.Windows.Forms.TabPage();
+			tabPage4 = new System.Windows.Forms.TabPage();
+			tabPage5 = new System.Windows.Forms.TabPage();
 			tabControl1.SuspendLayout();
 			SuspendLayout();
 			// 
@@ -54,6 +56,8 @@
 			tabControl1.Controls.Add(tabPage1);
 			tabControl1.Controls.Add(tabPage2);
 			tabControl1.Controls.Add(tabPage3);
+			tabControl1.Controls.Add(tabPage4);
+			tabControl1.Controls.Add(tabPage5);
 			tabControl1.Dock = System.Windows.Forms.DockStyle.Right;
 			tabControl1.Location = new System.Drawing.Point(550, 0);
 			tabControl1.Name = "tabControl1";
@@ -90,6 +94,24 @@
 			tabPage3.Text = "Степенная";
 			tabPage3.UseVisualStyleBackColor = true;
 			// 
+			// tabPage4
+			// 
+			tabPage4.Location = new System.Drawing.Point(4, 24);
+			tabPage4.Name = "tabPage4";
+			tabPage4.Size = new System.Drawing.Size(242, 422);
+			tabPage4.TabIndex = 2;
+			tabPage4.Text = "Квадратичная";
+			tabPage4.UseVisualStyleBackColor = true;
+			// 
+			// tabPage5
+			// 
+			tabPage5.Location = new System.Drawing.Point(4, 24);
+			tabPage5.Name = "tabPage5";
+			tabPage5.Size = new System.Drawing.Size(242, 422);
+			tabPage5.TabIndex = 2;
+			tabPage5.Text = "Экспоненциальная";
+			tabPage5.UseVisualStyleBackColor = true;
+			// 
 			// MainForm
 			// 
 			AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -103,6 +125,8 @@
 			ResumeLayout(false);
 		}
 
+		private System.Windows.Forms.TabPage tabPage5;
+		private System.Windows.Forms.TabPage tabPage4;
 		private System.Windows.Forms.TabPage tabPage3;
 
 		private System.Windows.Forms.TabControl tabControl1;
