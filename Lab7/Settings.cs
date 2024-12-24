@@ -36,6 +36,33 @@ public class LinearFunctionFitter : IFunctionFitter
 	}
 }
 
+public class LogFunctionFitter : IFunctionFitter
+{
+	private Func<double, double> _function;
+	public double[] X { get; }
+	public double[] Y { get; }
+	public double K { get; }
+	public double B { get; }
+	public double Deviation { get; }
+
+	public LogFunctionFitter(double[] x, double[] y)
+	{
+		if (x.Length != y.Length)
+			throw new ArgumentException();
+		if (x.Any(v => v <= 0))
+			throw new ArgumentException("All values in x must be positive for log transformation.");
+		X = x.Select(v => Math.Log(v, Math.E)).ToArray();
+		Y = y;
+		(K, B) = FunctionFitterUtils.FindLinearCoefficients(X, Y);
+		_function = v => K *Math.Log(v, Math.E) + B;
+		Deviation = FunctionFitterUtils.CalcDeviation(x, y, _function);
+	}
+	public double Calculate(double x)
+	{
+		return _function.Invoke(x);
+	}
+}
+
 public class ExponentialFunctionFitter : IFunctionFitter
 {
 	private Func<double, double> _function;
@@ -117,6 +144,33 @@ public class SquareFunctionFitter : IFunctionFitter
 	}
 }
 
+public class CubicFunctionFitter : IFunctionFitter
+{
+	private Func<double, double> _function;
+	public double[] X { get; }
+	public double[] Y { get; }
+	public double Deviation { get; }
+	public double A { get; }
+	public double B { get; }
+	public double C { get; }
+	public double D { get; }
+
+	public CubicFunctionFitter(double[] x, double[] y)
+	{
+		if (x.Length != y.Length)
+			throw new ArgumentException();
+		X = x;
+		Y = y;
+		(A, B, C, D) = FunctionFitterUtils.FindCoefficientsCubic(x, y);
+		_function = x => A * Math.Pow(x, 3) + B * Math.Pow(x,2) + C * x + D;
+		Deviation = FunctionFitterUtils.CalcDeviation(x, y, _function);
+	}
+	public double Calculate(double x)
+	{
+		return _function.Invoke(x);
+	}
+}
+
 public class FunctionSelector
 {
 	public double[] X { get; }
@@ -125,6 +179,8 @@ public class FunctionSelector
 	public PowerFunctionFitter PowerFunctionFitter { get; }
 	public SquareFunctionFitter SquareFunctionFitter { get; }
 	public ExponentialFunctionFitter ExponentialFunctionFitter { get; }
+	public CubicFunctionFitter CubicFunctionFitter { get; }
+	public LogFunctionFitter LogFunctionFitter { get; }
 	public IFunctionFitter BestFunctionFitter { get; }
 	public FunctionSelector(double[] x, double[] y)
 	{
@@ -136,6 +192,8 @@ public class FunctionSelector
 		PowerFunctionFitter = new PowerFunctionFitter(x,y);
 		SquareFunctionFitter = new SquareFunctionFitter(x, y);
 		ExponentialFunctionFitter = new ExponentialFunctionFitter(x, y);
+		CubicFunctionFitter = new CubicFunctionFitter(x, y);
+		LogFunctionFitter = new LogFunctionFitter(x, y);
 		BestFunctionFitter = LinearFunctionFitter.Deviation < PowerFunctionFitter.Deviation
 			? (LinearFunctionFitter.Deviation < SquareFunctionFitter.Deviation
 				? LinearFunctionFitter
@@ -184,6 +242,43 @@ public static class FunctionFitterUtils
 		var solution = matrix.Solve(vector);
 		ArgumentNullException.ThrowIfNull(solution);
 		return (solution[0], solution[1], solution[2]);
+	}
+	public static (double a, double b, double c, double d) FindCoefficientsCubic(double[] x, double[] y)
+	{
+		double sumX6 = 0;
+		double sumX5 = 0;
+		double sumX4 = 0;
+		double sumX3 = 0;
+		double sumX2 = 0;
+		double sumX = 0;
+		double sumX3Y = 0;
+		double sumX2Y = 0;
+		double sumXY = 0;
+		double sumY = 0;
+		for (var i = 0; i < x.Length; i++)
+		{
+			sumX6 += Math.Pow(x[i], 6);
+			sumX5 += Math.Pow(x[i], 5);
+			sumX4 += Math.Pow(x[i], 4);
+			sumX3 += Math.Pow(x[i], 3);
+			sumX2 += Math.Pow(x[i], 2);
+			sumX += x[i];
+			sumX3Y += Math.Pow(x[i], 3) * y[i];
+			sumX2Y += Math.Pow(x[i], 2) * y[i];
+			sumXY += x[i] * y[i];
+			sumY += y[i];
+		}
+		var matrix = Matrix<double>.Build.DenseOfArray(new[,]
+		{
+			{ sumX6, sumX5, sumX4, sumX3 },
+			{ sumX5, sumX4, sumX3, sumX2 },
+			{ sumX4, sumX3, sumX2, sumX },
+			{ sumX3, sumX2, sumX, x.Length }
+		});
+		var vector = Vector<double>.Build.Dense([sumX3Y, sumX2Y, sumXY, sumY]);
+		var solution = matrix.Solve(vector);
+		ArgumentNullException.ThrowIfNull(solution);
+		return (solution[0], solution[1], solution[2], solution[3]);
 	}
 	public static (double k, double b) FindLinearCoefficients(double[] x, double[] y)
 	{

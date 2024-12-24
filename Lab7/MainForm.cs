@@ -21,9 +21,12 @@ namespace Lab7
 			var functionSelector = new FunctionSelector(Settings.X, Settings.Y);
 			plotModel.Series.Add(GenerateScatterSeries(Settings.X, Settings.Y, "f(x)"));
 			// plotModel.Series.Add(GenerateLineSeries(Settings.X, functionSelector.LinearFunctionFitter.Calculate, "Линейная"));
-			// plotModel.Series.Add(GenerateLineSeries(Settings.X, functionSelector.PowerFunctionFitter.Calculate, "Степенная"));
-			// plotModel.Series.Add(GenerateLineSeries(Settings.X, functionSelector.SquareFunctionFitter.Calculate, "Квадратичная"));
+			plotModel.Series.Add(GenerateLineSeries(Settings.X, functionSelector.PowerFunctionFitter.Calculate, "Степенная"));
+			plotModel.Series.Add(GenerateLineSeries(Settings.X, functionSelector.SquareFunctionFitter.Calculate, "Квадратичная"));
 			plotModel.Series.Add(GenerateLineSeries(Settings.X, functionSelector.ExponentialFunctionFitter.Calculate, "Экспоненциальная"));
+			plotModel.Series.Add(GenerateLineSeries(Settings.X, functionSelector.CubicFunctionFitter.Calculate, "Кубическая"));
+			//plotModel.Series.Add(GenerateLineSeries(Settings.X, functionSelector.LogFunctionFitter.Calculate, "Логарифмическая"));
+
 			plotView1.Model = plotModel;
 			
 			tabPage1.Controls.Add(GenerateDataGridView(Settings.X, Settings.Y));
@@ -39,6 +42,9 @@ namespace Lab7
 			
 			tabPage5.Controls.Add(Hz(functionSelector.ExponentialFunctionFitter));
 			tabPage5.Controls.Add(GenerateDataGridView(functionSelector.ExponentialFunctionFitter.X, functionSelector.ExponentialFunctionFitter.Y));
+
+			tabPage6.Controls.Add(Hz(functionSelector.CubicFunctionFitter));
+			tabPage6.Controls.Add(GenerateDataGridView(functionSelector.CubicFunctionFitter.X, functionSelector.CubicFunctionFitter.Y));
 		}
 
 		private static ScatterSeries GenerateScatterSeries(double[] x, double[] y, string? title = null)
@@ -145,6 +151,23 @@ namespace Lab7
 			var label = new Label()
 			{
 				Text = $"a = {fitter.A}\nb = {fitter.B}\nσ = {fitter.Deviation}",
+				Dock = DockStyle.Fill,
+				// ReadOnly = true,
+				// WordWrap = true,
+				AutoSize = false
+			};
+			panel.Controls.Add(label);
+			return panel;
+		}
+		private static Panel Hz(CubicFunctionFitter fitter)
+		{
+			var panel = new Panel()
+			{
+				Dock = DockStyle.Fill
+			};
+			var label = new Label()
+			{
+				Text = $"a = {fitter.A}\nb = {fitter.B}\nc = {fitter.C}\nd = {fitter.D}\nσ = {fitter.Deviation}",
 				Dock = DockStyle.Fill,
 				// ReadOnly = true,
 				// WordWrap = true,
