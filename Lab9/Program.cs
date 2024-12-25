@@ -10,6 +10,8 @@ using PrintHelper;
 // Func<double, double> fourthDerivativeFunc = (x) =>
 //     4 * (4 * Math.Pow(x, 4) - 3) * Math.Sin(Math.Pow(x, 2)) - 48 * Math.Pow(x, 2) * Math.Cos(Math.Pow(x, 2));
 
+Console.OutputEncoding = System.Text.Encoding.UTF8;
+
 double[] x = [1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2];
 double[] y = [0.841, 0.810, 0.777, 0.741, 0.704, 0.665, 0.625, 0.583, 0.541, 0.498, 0.455];
 

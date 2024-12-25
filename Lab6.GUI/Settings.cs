@@ -171,3 +171,50 @@ public class Hz
 		return _splines.FirstOrDefault(spline => spline.InRange(x))?.Calculate(x) ?? throw new Exception();
 	}
 }
+
+public class Newton
+{
+	public double[] X { get; }
+	public double[] Y { get; }
+	public double[] DivDif { get; }
+	public Newton(double[] x, double[] y)
+	{
+		X = x;
+		Y = y;
+		DivDif = new double[X.Length];
+		Array.Copy(Y, DivDif, X.Length);
+		DividedDifferences();
+	}
+	void DividedDifferences()
+	{
+		int n = X.Length;
+		for (int i = 1; i < n; i++)
+		{
+			for(int j = n-1; j>=i;j--)
+			{
+				DivDif[j] = (DivDif[j] - DivDif[j - 1]) / (X[j] - X[j - i]);
+			}
+		}
+	}
+	public double Calculate(double x)
+	{
+		double result = DivDif[0];
+		double term = 1;
+
+		for (int i = 1; i < X.Length; i++)
+		{
+			term *= (x - X[i - 1]);
+			result += DivDif[i] * term;
+			//term = DivDif[i];
+
+			//for (int j = 0; j < i; j++)
+			//{
+			//	term *= (x - X[j]);
+			//}
+			//result += term;
+		}
+
+		return result;
+
+	}
+}

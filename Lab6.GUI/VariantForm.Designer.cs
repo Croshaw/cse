@@ -32,6 +32,7 @@ namespace Lab6.GUI
 		{
 			LeftPanel = new HoverablePanel();
 			textBox1 = new TextBox();
+			plotView1 = new OxyPlot.WindowsForms.PlotView();
 			LeftPanel.SuspendLayout();
 			SuspendLayout();
 			// 
@@ -54,11 +55,25 @@ namespace Lab6.GUI
 			textBox1.Size = new Size(125, 27);
 			textBox1.TabIndex = 0;
 			// 
+			// plotView1
+			// 
+			plotView1.Dock = DockStyle.Fill;
+			plotView1.Location = new Point(200, 0);
+			plotView1.Name = "plotView1";
+			plotView1.PanCursor = Cursors.Hand;
+			plotView1.Size = new Size(600, 450);
+			plotView1.TabIndex = 1;
+			plotView1.Text = "plotView1";
+			plotView1.ZoomHorizontalCursor = Cursors.SizeWE;
+			plotView1.ZoomRectangleCursor = Cursors.SizeNWSE;
+			plotView1.ZoomVerticalCursor = Cursors.SizeNS;
+			// 
 			// VariantForm
 			// 
 			AutoScaleDimensions = new SizeF(8F, 20F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(800, 450);
+			Controls.Add(plotView1);
 			Controls.Add(LeftPanel);
 			Name = "VariantForm";
 			Text = "Form1";
@@ -71,5 +86,6 @@ namespace Lab6.GUI
 
 		private HoverablePanel LeftPanel;
 		private TextBox textBox1;
+		private OxyPlot.WindowsForms.PlotView plotView1;
 	}
 }

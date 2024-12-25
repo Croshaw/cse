@@ -17,7 +17,7 @@ const double b = 3; //3
 
 double epsilon = 1e-6;
 
-var integrator = new RectangleIntegrator(a, b, 10, epsilon, RectangleIntegrator.MethodType.Left,function, firstDeriativeFunc);
+var integrator = new RectangleIntegrator(a, b, 10, epsilon, RectangleIntegrator.MethodType.Parabola,function, fifthDeriativeFunc);
 
 int id = 1;
 int lineWidth = 10;
@@ -59,7 +59,8 @@ table1.Columns.Add("|I(k) - I(k-1)|");
 table1.Columns.Add("E");
 foreach (var iteration in integrator.Iterations)
 {
-    table1.Rows.Add(k, iteration.N, iteration.H, iteration.I, last is null ? "—" : Math.Abs(iteration.I - last.I), iteration.E);
+	//Math.Abs(iteration.I - last.I)
+	table1.Rows.Add(k, iteration.N, iteration.H, iteration.I, last is null ? "—" : iteration.E - (iteration.E / 4), iteration.E);
     last = iteration;
     k++;
 }
