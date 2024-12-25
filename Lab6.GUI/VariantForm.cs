@@ -1,3 +1,4 @@
+using Lab6.GUI.Controls;
 using OxyPlot.Series;
 using OxyPlot;
 using OxyPlot.Legends;
@@ -6,14 +7,35 @@ namespace Lab6.GUI
 {
 	public partial class VariantForm : Form
 	{
-		public static readonly double[] X = [1, 1.1, 1.17, 1.23, 1.3, 1.35, 1.41, 1.5, 1.56, 1.6, 1.64, 1.7, 1.75, 1.8, 1.89, 1.93, 2];
-		public static readonly double[] Y = [1.718, 1.904, 2.052, 2.191, 2.369, 2.507, 2.686, 2.982, 3.199, 3.353, 3.515, 3.774, 4.005, 4.250, 4.729, 4.960, 5.389];
-		public static readonly double[] X1 = [0.21,0.22,0.23,0.24,0.25, 0.26, 0.27, 0.28, 0.29, 0.3];
-		public static readonly double[] Y1 = [1.045087, 1.04959, 1.054324, 1.059291, 1.064494, 1.069937, 1.075623, 1.081555, 1.087738, 1.094174];
-		public static readonly double[] NeedX = [0.215, 0.234, 0.257, 0.286, 0.293];
 		public VariantForm()
 		{
+			Func<double, double> test = (x) => Math.Pow(x, 3) - 2 * Math.Pow(x, 2) + x - 1;
 			InitializeComponent();
+			AddPointBTN.Click += (_, _) => AddPoint();
+			RemovePointBTN.Click += (_, _) => RemovePoint();
+			AddUnknownXBTN.Click += (_, _) => AddUnknownX();
+			RemoveUnknownXBTN.Click += (_, _) => RemoveUnknownX();
+			RunButton.Click += (_, _) =>
+			{
+				var newton = new NewtonInterpolation(GetPoints());
+				var points = GetUnknownX().Select(x => new PointD(x, newton.Calculate(x))).ToArray();
+				plotView1.Model.Series.Clear();
+				plotView1.Model.Series.Add(GenerateLineSeries(points, "Ньютон"));
+				plotView1.Model.InvalidatePlot(true);
+				var i = 0;
+				foreach (Control control in UnknownXPanel.Controls)
+				{
+					if (control is not PointControl pointControl) continue;
+					pointControl.Point = points[i];
+					i++;
+				}
+
+				MessageBox.Show(string.Join(" ; ", Settings.UnknownX.Select(x => test(x).ToString())));;
+			};
+			for (var i = 0; i < Settings.X.Length; i++)
+				AddPoint(new PointD(Settings.X[i], Settings.Y[i]));
+			foreach (var x in Settings.UnknownX)
+				AddUnknownX(x);
 			var plotModel = new PlotModel();
 			var legend = new Legend()
 			{
@@ -21,49 +43,116 @@ namespace Lab6.GUI
 				LegendPlacement = LegendPlacement.Outside
 			};
 			plotModel.Legends.Add(legend);
-
-			plotModel.Series.Add(GenerateScatterSeries(X1, Y1, "f(x)"));
-			var newton = new Newton(X1, Y1);
-			plotModel.Series.Add(GenerateLineSeries(NeedX, newton.Calculate, "Newton"));
-			string result = String.Join(" | ", NeedX.Select(x => newton.Calculate(x).ToString()));
-			MessageBox.Show(result);
 			plotView1.Model = plotModel;
 		}
 
-		private static ScatterSeries GenerateScatterSeries(double[] x, double[] y, string? title = null)
+		private void AddPoint(PointD? point = null)
 		{
-			var scatterSeries = new ScatterSeries
+			var pointControl = new PointControl()
 			{
-				MarkerType = MarkerType.Circle,
-				MarkerSize = 5,
-				Title = title
+				Dock = DockStyle.Left,
+				AutoSize = true,
+				FlowDirection = FlowDirection.TopDown
 			};
-
-			for (var i = 0; i < x.Length; i++)
-				scatterSeries.Points.Add(new ScatterPoint(x[i], y[i]));
-
-			return scatterSeries;
+			if (point.HasValue)
+				pointControl.Point = point.Value;
+			PointsPanel.Controls.Add(pointControl);
 		}
-		private static LineSeries GenerateLineSeries(double firstX, double lastX, double count, Func<double, double> y, string? title = null)
+
+		private void RemovePoint()
+		{
+			if(PointsPanel.Controls.Count > 0)
+				PointsPanel.Controls.RemoveAt(PointsPanel.Controls.Count-1);
+		}
+
+		private void AddUnknownX(double? x = null)
+		{
+			var point = new PointControl()
+			{
+				Dock = DockStyle.Left,
+				AutoSize = true,
+				FlowDirection = FlowDirection.TopDown,
+				ReadOnlyY = true
+			};
+			if (x is not null)
+				point.Point = new PointD(x.Value, 0);
+			point.KeyPress += Utils.OnlyDoubleNumbers;
+			UnknownXPanel.Controls.Add(point);
+		}
+		
+		private void RemoveUnknownX()
+		{
+			if(UnknownXPanel.Controls.Count > 0)
+				UnknownXPanel.Controls.RemoveAt(UnknownXPanel.Controls.Count-1);
+		}
+		
+		private PointD[] GetPoints()
+		{
+			List<PointD> points = [];
+			foreach (Control control in PointsPanel.Controls)
+			{
+				if(control is PointControl point)
+					points.Add(point.Point);
+			}
+			return points.ToArray();
+		}
+		
+		private double[] GetUnknownX()
+		{
+			List<double> xes = [];
+			foreach (Control control in UnknownXPanel.Controls)
+			{
+				if(control is PointControl pointControl)
+					xes.Add(pointControl.Point.X);
+			}
+			return xes.ToArray();
+		}
+		
+		private static LineSeries GenerateLineSeries(PointD[] points, string? title = null)
 		{
 			var lineSeries = new LineSeries()
 			{
 				Title = title,
 			};
-			double step = (lastX - firstX) / count;
-			for(; firstX<=lastX; firstX+=step)
-				lineSeries.Points.Add(new DataPoint(firstX, y.Invoke(firstX)));
+			foreach (var point in points)
+				lineSeries.Points.Add(new DataPoint(point.X, point.Y));
 			return lineSeries;
 		}
-		private static LineSeries GenerateLineSeries(double[] x, Func<double, double> y, string? title = null)
-		{
-			var lineSeries = new LineSeries()
-			{
-				Title = title,
-			};
-			foreach (var t in x)
-				lineSeries.Points.Add(new DataPoint(t, y.Invoke(t)));
-			return lineSeries;
-		}
+		
+		// private static ScatterSeries GenerateScatterSeries(double[] x, double[] y, string? title = null)
+		// {
+		// 	var scatterSeries = new ScatterSeries
+		// 	{
+		// 		MarkerType = MarkerType.Circle,
+		// 		MarkerSize = 5,
+		// 		Title = title
+		// 	};
+		//
+		// 	for (var i = 0; i < x.Length; i++)
+		// 		scatterSeries.Points.Add(new ScatterPoint(x[i], y[i]));
+		//
+		// 	return scatterSeries;
+		// }
+		// private static LineSeries GenerateLineSeries(double firstX, double lastX, double count, Func<double, double> y, string? title = null)
+		// {
+		// 	var lineSeries = new LineSeries()
+		// 	{
+		// 		Title = title,
+		// 	};
+		// 	double step = (lastX - firstX) / count;
+		// 	for(; firstX<=lastX; firstX+=step)
+		// 		lineSeries.Points.Add(new DataPoint(firstX, y.Invoke(firstX)));
+		// 	return lineSeries;
+		// }
+		// private static LineSeries GenerateLineSeries(double[] x, Func<double, double> y, string? title = null)
+		// {
+		// 	var lineSeries = new LineSeries()
+		// 	{
+		// 		Title = title,
+		// 	};
+		// 	foreach (var t in x)
+		// 		lineSeries.Points.Add(new DataPoint(t, y.Invoke(t)));
+		// 	return lineSeries;
+		// }
 	}
 }

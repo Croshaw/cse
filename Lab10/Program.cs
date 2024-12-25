@@ -1,31 +1,10 @@
-﻿using PrintHelper;
+﻿using Lab10;
+using Spectre.Console;
 
-Func<double,double,double> function = (u,t) => (2*t*u+1)/(1-Math.Pow(t, 2));
-Func<double,double,double> exactSolution = (u,t) => Math.Pow(t,2)*u+t+1;
-double t0 = 0;
-double T = 0.9;
-double h = 0.1;
+// var ts = new CauchyApproximation(new Range<double>(0, 0.9), 0, 0.1, "-2*u-3*t+2", "1.75-1.5*t-1.75*(e^(-2*t))");
+//
+// AnsiConsole.Write(ts.Table);
+// AnsiConsole.Write(ts.ComparisonTable);
 
-var n = (int)((T - t0) / h) + 1;
-var t = new double[n];
-var u = new double[n];
-t[0] = t0;
-u[0] = 1;
-for (var i = 1; i < n; i++)
-{
-    u[i] = u[i - 1] + h * function(u[i - 1], t[i - 1]);
-    t[i] = t[i-1] + h;
-}
-
-var table = new Table()
-{
-    ColumnHeadersVisible = true,
-    BorderStyle = BorderStyle.Light
-};
-table.AddColumns("i", "t", "u", "toch");
-for (var i = 0; i < n; i++)
-{
-   table.Rows.Add(i, t[i], u[i], exactSolution(u[i], t[i]));
-}
-
-Console.WriteLine(table);
+var hz = new CauchyReporter(new Range<double>(0, 0.9), 0, "-2*u-3*t+2", "1.75-1.5*t-1.75*(e^(-2*t))", 0.1, 0.05, 0.025, 0.0125, 0.00625, 0.003125);
+hz.ToConsole();
