@@ -36,17 +36,26 @@ namespace Lab6.GUI
 			AddUnknownXBTN = new System.Windows.Forms.Button();
 			RemoveUnknownXBTN = new System.Windows.Forms.Button();
 			UnknownXPanel = new System.Windows.Forms.FlowLayoutPanel();
+			flowLayoutPanel4 = new System.Windows.Forms.FlowLayoutPanel();
+			label3 = new System.Windows.Forms.Label();
+			label4 = new System.Windows.Forms.Label();
 			panel2 = new System.Windows.Forms.Panel();
 			flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
 			AddPointBTN = new System.Windows.Forms.Button();
 			RemovePointBTN = new System.Windows.Forms.Button();
 			PointsPanel = new System.Windows.Forms.FlowLayoutPanel();
+			flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
+			label2 = new System.Windows.Forms.Label();
+			label1 = new System.Windows.Forms.Label();
 			panel3 = new System.Windows.Forms.Panel();
 			RunButton = new System.Windows.Forms.Button();
+			label5 = new System.Windows.Forms.Label();
 			panel1.SuspendLayout();
 			flowLayoutPanel2.SuspendLayout();
+			flowLayoutPanel4.SuspendLayout();
 			panel2.SuspendLayout();
 			flowLayoutPanel1.SuspendLayout();
+			flowLayoutPanel3.SuspendLayout();
 			panel3.SuspendLayout();
 			SuspendLayout();
 			// 
@@ -56,7 +65,7 @@ namespace Lab6.GUI
 			plotView1.Location = new System.Drawing.Point(0, 0);
 			plotView1.Name = "plotView1";
 			plotView1.PanCursor = System.Windows.Forms.Cursors.Hand;
-			plotView1.Size = new System.Drawing.Size(821, 230);
+			plotView1.Size = new System.Drawing.Size(821, 166);
 			plotView1.TabIndex = 1;
 			plotView1.Text = "plotView1";
 			plotView1.ZoomHorizontalCursor = System.Windows.Forms.Cursors.SizeWE;
@@ -68,6 +77,7 @@ namespace Lab6.GUI
 			panel1.AutoScroll = true;
 			panel1.Controls.Add(flowLayoutPanel2);
 			panel1.Controls.Add(UnknownXPanel);
+			panel1.Controls.Add(flowLayoutPanel4);
 			panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
 			panel1.Location = new System.Drawing.Point(0, 325);
 			panel1.Name = "panel1";
@@ -81,7 +91,7 @@ namespace Lab6.GUI
 			flowLayoutPanel2.Controls.Add(RemoveUnknownXBTN);
 			flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Left;
 			flowLayoutPanel2.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-			flowLayoutPanel2.Location = new System.Drawing.Point(0, 0);
+			flowLayoutPanel2.Location = new System.Drawing.Point(23, 0);
 			flowLayoutPanel2.Name = "flowLayoutPanel2";
 			flowLayoutPanel2.Size = new System.Drawing.Size(28, 83);
 			flowLayoutPanel2.TabIndex = 2;
@@ -108,19 +118,52 @@ namespace Lab6.GUI
 			// 
 			UnknownXPanel.AutoSize = true;
 			UnknownXPanel.Dock = System.Windows.Forms.DockStyle.Left;
-			UnknownXPanel.Location = new System.Drawing.Point(0, 0);
+			UnknownXPanel.Location = new System.Drawing.Point(23, 0);
 			UnknownXPanel.Name = "UnknownXPanel";
 			UnknownXPanel.Size = new System.Drawing.Size(0, 83);
 			UnknownXPanel.TabIndex = 0;
 			UnknownXPanel.WrapContents = false;
+			// 
+			// flowLayoutPanel4
+			// 
+			flowLayoutPanel4.AutoSize = true;
+			flowLayoutPanel4.Controls.Add(label3);
+			flowLayoutPanel4.Controls.Add(label4);
+			flowLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Left;
+			flowLayoutPanel4.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+			flowLayoutPanel4.Location = new System.Drawing.Point(0, 0);
+			flowLayoutPanel4.Name = "flowLayoutPanel4";
+			flowLayoutPanel4.Size = new System.Drawing.Size(23, 83);
+			flowLayoutPanel4.TabIndex = 3;
+			// 
+			// label3
+			// 
+			label3.AutoSize = true;
+			label3.Location = new System.Drawing.Point(3, 0);
+			label3.Margin = new System.Windows.Forms.Padding(3, 0, 3, 17);
+			label3.Name = "label3";
+			label3.Padding = new System.Windows.Forms.Padding(0, 7, 0, 0);
+			label3.Size = new System.Drawing.Size(17, 22);
+			label3.TabIndex = 3;
+			label3.Text = "X:";
+			// 
+			// label4
+			// 
+			label4.AutoSize = true;
+			label4.Location = new System.Drawing.Point(3, 39);
+			label4.Name = "label4";
+			label4.Size = new System.Drawing.Size(17, 15);
+			label4.TabIndex = 2;
+			label4.Text = "Y:";
 			// 
 			// panel2
 			// 
 			panel2.AutoScroll = true;
 			panel2.Controls.Add(flowLayoutPanel1);
 			panel2.Controls.Add(PointsPanel);
+			panel2.Controls.Add(flowLayoutPanel3);
 			panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-			panel2.Location = new System.Drawing.Point(0, 230);
+			panel2.Location = new System.Drawing.Point(0, 166);
 			panel2.Name = "panel2";
 			panel2.Size = new System.Drawing.Size(821, 95);
 			panel2.TabIndex = 3;
@@ -132,7 +175,7 @@ namespace Lab6.GUI
 			flowLayoutPanel1.Controls.Add(RemovePointBTN);
 			flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Left;
 			flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-			flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+			flowLayoutPanel1.Location = new System.Drawing.Point(23, 0);
 			flowLayoutPanel1.Name = "flowLayoutPanel1";
 			flowLayoutPanel1.Size = new System.Drawing.Size(28, 95);
 			flowLayoutPanel1.TabIndex = 1;
@@ -159,11 +202,43 @@ namespace Lab6.GUI
 			// 
 			PointsPanel.AutoSize = true;
 			PointsPanel.Dock = System.Windows.Forms.DockStyle.Left;
-			PointsPanel.Location = new System.Drawing.Point(0, 0);
+			PointsPanel.Location = new System.Drawing.Point(23, 0);
 			PointsPanel.Name = "PointsPanel";
 			PointsPanel.Size = new System.Drawing.Size(0, 95);
 			PointsPanel.TabIndex = 0;
 			PointsPanel.WrapContents = false;
+			// 
+			// flowLayoutPanel3
+			// 
+			flowLayoutPanel3.AutoSize = true;
+			flowLayoutPanel3.Controls.Add(label2);
+			flowLayoutPanel3.Controls.Add(label1);
+			flowLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Left;
+			flowLayoutPanel3.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+			flowLayoutPanel3.Location = new System.Drawing.Point(0, 0);
+			flowLayoutPanel3.Name = "flowLayoutPanel3";
+			flowLayoutPanel3.Size = new System.Drawing.Size(23, 95);
+			flowLayoutPanel3.TabIndex = 2;
+			// 
+			// label2
+			// 
+			label2.AutoSize = true;
+			label2.Location = new System.Drawing.Point(3, 0);
+			label2.Margin = new System.Windows.Forms.Padding(3, 0, 3, 17);
+			label2.Name = "label2";
+			label2.Padding = new System.Windows.Forms.Padding(0, 7, 0, 0);
+			label2.Size = new System.Drawing.Size(17, 22);
+			label2.TabIndex = 3;
+			label2.Text = "X:";
+			// 
+			// label1
+			// 
+			label1.AutoSize = true;
+			label1.Location = new System.Drawing.Point(3, 39);
+			label1.Name = "label1";
+			label1.Size = new System.Drawing.Size(17, 15);
+			label1.TabIndex = 2;
+			label1.Text = "Y:";
 			// 
 			// panel3
 			// 
@@ -186,6 +261,17 @@ namespace Lab6.GUI
 			RunButton.Text = "Запустить";
 			RunButton.UseVisualStyleBackColor = true;
 			// 
+			// label5
+			// 
+			label5.AutoEllipsis = true;
+			label5.Dock = System.Windows.Forms.DockStyle.Bottom;
+			label5.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)204));
+			label5.Location = new System.Drawing.Point(0, 261);
+			label5.Name = "label5";
+			label5.Size = new System.Drawing.Size(821, 64);
+			label5.TabIndex = 5;
+			label5.Text = "Результат:";
+			// 
 			// VariantForm
 			// 
 			AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -193,6 +279,7 @@ namespace Lab6.GUI
 			ClientSize = new System.Drawing.Size(821, 450);
 			Controls.Add(plotView1);
 			Controls.Add(panel2);
+			Controls.Add(label5);
 			Controls.Add(panel1);
 			Controls.Add(panel3);
 			Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -200,13 +287,26 @@ namespace Lab6.GUI
 			panel1.ResumeLayout(false);
 			panel1.PerformLayout();
 			flowLayoutPanel2.ResumeLayout(false);
+			flowLayoutPanel4.ResumeLayout(false);
+			flowLayoutPanel4.PerformLayout();
 			panel2.ResumeLayout(false);
 			panel2.PerformLayout();
 			flowLayoutPanel1.ResumeLayout(false);
+			flowLayoutPanel3.ResumeLayout(false);
+			flowLayoutPanel3.PerformLayout();
 			panel3.ResumeLayout(false);
 			panel3.PerformLayout();
 			ResumeLayout(false);
 		}
+
+		private System.Windows.Forms.Label label5;
+
+		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel3;
+		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel4;
+		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Label label4;
 
 		private System.Windows.Forms.Button AddUnknownXBTN;
 		private System.Windows.Forms.Button RemoveUnknownXBTN;

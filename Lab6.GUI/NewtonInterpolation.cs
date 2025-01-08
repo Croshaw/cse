@@ -1,5 +1,7 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
 using Lab6.GUI.Controls;
+using MathNet.Symbolics;
 
 namespace Lab6.GUI;
 
@@ -52,15 +54,16 @@ public class NewtonInterpolation
             return _formula;
         var sb = new StringBuilder();
         var temp = "";
-        sb.Append(Points[0].Y);
+        sb.Append(Points[0].Y.ToString(CultureInfo.InvariantCulture));
         for (var i = 1; i < Points.Length; i++)
         {
-            temp += $"(x - {Points[i-1].X})";
-            sb.Append($" + {DivDif[i]} * {temp}");
+            temp += $"(x - {Points[i-1].X.ToString(CultureInfo.InvariantCulture)})";
+            sb.Append($" + {DivDif[i].ToString(CultureInfo.InvariantCulture)} * {temp}");
             if (i != Points.Length - 1)
                 temp += " * ";
         }
         _formula = sb.ToString();
+        _formula = SymbolicExpression.Parse(_formula).Expand().ToString();
         return _formula;
     }
 }

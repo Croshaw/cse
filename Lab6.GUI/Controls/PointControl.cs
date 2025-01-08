@@ -47,6 +47,12 @@ public class PointControl : FlowLayoutPanel
     public bool ReadOnlyX { get => XTB.ReadOnly; set => XTB.ReadOnly = value; }
     public bool ReadOnlyY { get => YTB.ReadOnly; set => YTB.ReadOnly = value; }
 
+    public new int Width
+    {
+        get => XTB.Width;
+        set => XTB.Width = YTB.Width = value;
+    }
+
     public PointControl()
     {
         XTB = new TextBox()

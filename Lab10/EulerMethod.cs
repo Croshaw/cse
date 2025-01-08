@@ -34,11 +34,13 @@ public class CauchyReporter
 {
     private Table[] tables;
     private Dictionary<double, CauchyApproximation> _approximations = [];
+    private double[] _steps;
     public CauchyReporter(Range<double> range, double u0, string function, string exactFunction, params double[] steps)
     {
         foreach (var step in steps)
             _approximations[step] = new CauchyApproximation(range, u0, step, function, exactFunction);
         tables = new Table[steps.Length - 1];
+        _steps = steps;
         var tmp = steps.OrderDescending().ToArray();
         for (var i = 0; i < tmp.Length - 1; i++)
         {
@@ -97,8 +99,11 @@ public class CauchyReporter
 
     public void ToConsole()
     {
-        foreach (var table in tables)
-            AnsiConsole.Write(table);
+        for (var i = 0; i < tables.Length; i++)
+        {
+            Console.WriteLine($"т={_steps[i]}");
+            AnsiConsole.Write(tables[i]);
+        }
     }
     
 }
